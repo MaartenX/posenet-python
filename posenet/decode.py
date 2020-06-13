@@ -4,7 +4,7 @@ from posenet.constants import *
 
 
 def traverse_to_targ_keypoint(
-        edge_id, source_keypoint, target_keypoint_id, scores, offsets, output_stride, displacements
+        edge_id, source_keypoint, target_keypoint_id, scores, offsets, output_stride, displacements, offset_refine_step = 2
 ):
     height = scores.shape[0]
     width = scores.shape[1]
@@ -15,15 +15,20 @@ def traverse_to_targ_keypoint(
     displaced_point = source_keypoint + displacements[
         source_keypoint_indices[0], source_keypoint_indices[1], edge_id]
 
+    for i in range(0, offset_refine_step):
+        displaced_point_indices = np.clip(
+            np.round(displaced_point / output_stride), a_min=0, a_max=[height - 1, width - 1]).astype(np.int32)
+
+        displaced_point = displaced_point_indices * output_stride + offsets[
+            displaced_point_indices[0], displaced_point_indices[1], target_keypoint_id]
+
     displaced_point_indices = np.clip(
         np.round(displaced_point / output_stride), a_min=0, a_max=[height - 1, width - 1]).astype(np.int32)
 
-    score = scores[displaced_point_indices[0], displaced_point_indices[1], target_keypoint_id]
+    score = scores[displaced_point_indices[0],
+                   displaced_point_indices[1], target_keypoint_id]
 
-    image_coord = displaced_point_indices * output_stride + offsets[
-        displaced_point_indices[0], displaced_point_indices[1], target_keypoint_id]
-
-    return score, image_coord
+    return score, displaced_point
 
 
 def decode_pose(
