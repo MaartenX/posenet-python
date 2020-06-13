@@ -9,7 +9,7 @@ class PoseNet:
         self.min_score = min_score
 
     def estimate_multiple_poses(self, image, max_pose_detections=10):
-        heatmap_result, offsets_result, displacement_fwd_result, displacement_bwd_result, image_scale = \
+        heatmap_result, offsets_result, displacement_fwd_result, displacement_bwd_result, image_scale, image_padding = \
             self.model.predict(image)
 
         pose_scores, keypoint_scores, keypoint_coords = posenet.decode_multiple_poses(
@@ -21,7 +21,7 @@ class PoseNet:
             max_pose_detections=max_pose_detections,
             min_pose_score=self.min_score)
 
-        keypoint_coords *= image_scale
+        keypoint_coords = keypoint_coords * image_scale - image_padding
 
         return pose_scores, keypoint_scores, keypoint_coords
 

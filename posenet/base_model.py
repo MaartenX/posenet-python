@@ -26,7 +26,7 @@ class BaseModel(ABC):
         pass
 
     def predict(self, image):
-        input_image, image_scale = self.preprocess_input(image)
+        input_image, image_scale, image_padding = self.preprocess_input(image)
 
         input_image = tf.convert_to_tensor(input_image, dtype=tf.float32)
 
@@ -37,4 +37,4 @@ class BaseModel(ABC):
         displacement_fwd_result = result[self.output_tensor_names[self.DISPLACEMENT_FWD_KEY]]
         displacement_bwd_result = result[self.output_tensor_names[self.DISPLACEMENT_BWD_KEY]]
 
-        return tf.sigmoid(heatmap_result), offsets_result, displacement_fwd_result, displacement_bwd_result, image_scale
+        return tf.sigmoid(heatmap_result), offsets_result, displacement_fwd_result, displacement_bwd_result, image_scale, image_padding
