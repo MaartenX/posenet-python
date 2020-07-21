@@ -1,7 +1,6 @@
 import tensorflow as tf
 import os
 import posenet.converter.config as config
-import posenet.converter.tfjs2tf as tfjs2tf
 from posenet.resnet import ResNet
 from posenet.mobilenet import MobileNet
 from posenet.posenet import PoseNet
@@ -17,8 +16,13 @@ def load_model(model, stride, quant_bytes=4, multiplier=1.0):
         print('Loading MobileNet model')
 
     model_path = model_cfg['tf_dir']
+
+    if not os.path.exists(model_path):
+         model_path = os.path.join(os.path.dirname(__file__) , model_path)
+
     if not os.path.exists(model_path):
         print('Cannot find tf model path %s, converting from tfjs...' % model_path)
+        import posenet.converter.tfjs2tf as tfjs2tf
         tfjs2tf.convert(model_cfg)
         assert os.path.exists(model_path)
 
