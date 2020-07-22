@@ -19,6 +19,7 @@ def load_model(model, stride, quant_bytes=4, multiplier=1.0, models_root=None):
 
     if not models_root is None:
          model_path = os.path.join(models_root, model_path)
+         model_cfg['tf_dir'] = model_path
 
     if not os.path.exists(model_path):
         print('Cannot find tf model path %s, converting from tfjs...' % model_path)
