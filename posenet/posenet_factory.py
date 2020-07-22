@@ -6,7 +6,7 @@ from posenet.mobilenet import MobileNet
 from posenet.posenet import PoseNet
 
 
-def load_model(model, stride, quant_bytes=4, multiplier=1.0):
+def load_model(model, stride, quant_bytes=4, multiplier=1.0, models_root=None):
 
     if model == config.RESNET50_MODEL:
         model_cfg = config.bodypix_resnet50_config(stride, quant_bytes)
@@ -17,8 +17,8 @@ def load_model(model, stride, quant_bytes=4, multiplier=1.0):
 
     model_path = model_cfg['tf_dir']
 
-    if not os.path.exists(model_path):
-         model_path = os.path.join(os.path.dirname(__file__) , model_path)
+    if not models_root is None:
+         model_path = os.path.join(models_root, model_path)
 
     if not os.path.exists(model_path):
         print('Cannot find tf model path %s, converting from tfjs...' % model_path)
